@@ -102,7 +102,14 @@ def main(argv):
 	      mode = arg
 
 	if mode == 'video':
-	    print 'not implemented'
+	    cap = cv2.VideoCapture('test.avi')
+	    while(ca.isOpened()):
+		ret, frame = cap.read()
+		Mask = applyFilters(frame)
+                cv2.imshow('output', Mask)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                   break
+	    cap.release()
 	elif mode == 'webcam':
 	    try:
 	        cap = cv2.VideoCapture(0)
@@ -115,9 +122,10 @@ def main(argv):
                 cv2.imshow('output', Mask)
 	   	if cv2.waitKey(1) & 0xFF == ord('q'):
 		   break
-	elif mode == 'picture':
-	    image = cv2.imread('testPicture2.png')
-	    Mask = applyFilters(image)
+	    cap.release()
+ 	elif mode == 'picture':
+	    cap = cv2.imread('testPicture2.png')
+	    Mask = applyFilters(cap)
 	    cv2.imshow('output', Mask)
             #k = cv2.waitKey(0)
             if cv2.waitKey(0) == 27:
@@ -126,15 +134,7 @@ def main(argv):
 	    print 'argument not recognized run --h'
 	    sys.exit(2)
 
-	grayMask = rgb2gray(image)
-	blurMask = gaussianBlur(grayMask, 5, 1.5, 200)
-	cannyAmplitude, cannyPhase = cannyFilter(grayMask)
-	edgesWeak, edgesStrong = edgeSupression(cannyAmplitude, cannyPhase, 5, 0.09, 0.1)
-
-	cv2.imshow('test', edgesStrong)
-	k = cv2.waitKey(0)
-	if k == 27:
-		cv2.destroyAllWindows()
+	cv2.destroyAllWindows()
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
