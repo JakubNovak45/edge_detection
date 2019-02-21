@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import sys, getopt
 from matplotlib.pyplot import imshow
 from matplotlib import pyplot as plt
 
@@ -61,27 +62,79 @@ def edgeSupression(amplitude, phase, kernel_size, lowBound, highBound):
     return weak, strong
 
 
+def applyFilters(image):
+        grayMask = rgb2gray(image)
+        blurMask = gaussianBlur(grayMask, 5, 1.5, 200)
+        cannyAmplitude, cannyPhase = cannyFilter(grayMask)
+        edgesWeak, edgesStrong = edgeSupression(cannyAmplitude, cannyPhase, 5, 0.09, 0.1)
 
-image = cv2.imread('testPicture2.png')
+        #lineImage = np.copy(image) * 0
+        #lines = cv2.HoughLinesP(edgeMask, 1, np.pi/180, 15, np.array([]), 50, 20)
 
-grayMask = rgb2gray(image)
-blurMask = gaussianBlur(grayMask, 5, 1.5, 200)
-cannyAmplitude, cannyPhase = cannyFilter(grayMask)
-edgesWeak, edgesStrong = edgeSupression(cannyAmplitude, cannyPhase, 5, 0.09, 0.1)
+        #for line in lines:
+        #       for x1, y1, x2, y2 in line:
+        #               cv2.line(lineImage, (x1, y1), (x2, y2), (255, 0, 0), 5)
 
-#lineImage = np.copy(image) * 0
-#lines = cv2.HoughLinesP(edgeMask, 1, np.pi/180, 15, np.array([]), 50, 20)
-
-#for line in lines:
-#	for x1, y1, x2, y2 in line:
-#		cv2.line(lineImage, (x1, y1), (x2, y2), (255, 0, 0), 5)
-
-#lineEdges = cv2.addWeighted(image, 0.8, lineImage, 1, 0)
+        #lineEdges = cv2.addWeighted(image, 0.8, lineImage, 1, 0)
 
 
-#cv2.imshow('grayMask', edgesWeak)
-#cv2.imshow('gaussianBLur', edgesStrong)
-cv2.imshow('test', edgesStrong)
-k = cv2.waitKey(0)
-if k == 27:
-	cv2.destroyAllWindows()
+        #cv2.imshow('grayMask', edgesWeak)
+        #cv2.imshow('gaussianBLur', edgesStrong)
+        return edgesStrong
+
+def main(argv):
+        mode = None
+	try:
+	   opts, args = getopt.getopt(argv, 'hi:o:t', ['help', 'mode='])
+	   if not opts:
+	       print 'No options supplid'
+	       print 'edge_detection.py --m <webcam / video / picture>'
+	       sys.exit(2)
+	except getopt.GetoptError, e:
+	   print e
+	   sys.exit(2)
+
+	for opt, arg in opts:
+	   if opt in ('--h', '--help'):
+	      print 'edge_detection.py --m <webcam / video / picture>'
+              sys.exit(2)
+	   elif opt in ('--m', '--mode'):
+	      mode = arg
+
+	if mode == 'video':
+	    print 'not implemented'
+	elif mode == 'webcam':
+	    try:
+	        cap = cv2.VideoCapture(0)
+	    except e:
+	        print e
+		sys.exit(2)
+	    while (True):
+		ret, frame = cap.read()
+                Mask = applyFilters(frame)
+                cv2.imshow('output', Mask)
+	   	if cv2.waitKey(1) & 0xFF == ord('q'):
+		   break
+	elif mode == 'picture':
+	    image = cv2.imread('testPicture2.png')
+	    Mask = applyFilters(image)
+	    cv2.imshow('output', Mask)
+            #k = cv2.waitKey(0)
+            if cv2.waitKey(0) == 27:
+               cv2.destroyAllWindows()
+	else:
+	    print 'argument not recognized run --h'
+	    sys.exit(2)
+
+	grayMask = rgb2gray(image)
+	blurMask = gaussianBlur(grayMask, 5, 1.5, 200)
+	cannyAmplitude, cannyPhase = cannyFilter(grayMask)
+	edgesWeak, edgesStrong = edgeSupression(cannyAmplitude, cannyPhase, 5, 0.09, 0.1)
+
+	cv2.imshow('test', edgesStrong)
+	k = cv2.waitKey(0)
+	if k == 27:
+		cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+	main(sys.argv[1:])
