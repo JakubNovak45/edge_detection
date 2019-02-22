@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-import sys, getopt
+import argparse
+import sys, getopt, time
 from matplotlib.pyplot import imshow
 from matplotlib import pyplot as plt
 
@@ -83,34 +84,27 @@ def applyFilters(image):
         return edgesStrong
 
 def main(argv):
-        mode = None
-	try:
-	   opts, args = getopt.getopt(argv, 'hi:o:t', ['help', 'mode='])
-	   if not opts:
-	       print 'No options supplid'
-	       print 'edge_detection.py --m <webcam / video / picture>'
-	       sys.exit(2)
-	except getopt.GetoptError, e:
-	   print e
-	   sys.exit(2)
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-m', '--mode', help='Mode selection <video / webcam / picture>', required=True)
+	args = vars(parser.parse_args())
 
-	for opt, arg in opts:
-	   if opt in ('--h', '--help'):
-	      print 'edge_detection.py --m <webcam / video / picture>'
-              sys.exit(2)
-	   elif opt in ('--m', '--mode'):
-	      mode = arg
-
-	if mode == 'video':
-	    cap = cv2.VideoCapture('test.avi')
-	    while(ca.isOpened()):
+	if args['mode'] == 'picture':
+	    cap = cv2.imread('testFile/testPicture2.png')
+	    Mask = applyFilters(cap)
+	    cv2.imshow('output', Mask)
+            #k = cv2.waitKey(0)
+            if cv2.waitKey(25) == 27:
+               cv2.destroyAllWindows()
+	elif args['mode'] == 'video':
+	    cap = cv2.VideoCapture('testFile/test_video.mp4')
+	    while(cap.isOpened()):
 		ret, frame = cap.read()
-		Mask = applyFilters(frame)
-                cv2.imshow('output', Mask)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+		#Mask = applyFilters(frame)
+                cv2.imshow('output', frame)
+                if cv2.waitKey(50) & 0xFF == 27:
                    break
 	    cap.release()
-	elif mode == 'webcam':
+	elif args['mode'] == 'webcam':
 	    try:
 	        cap = cv2.VideoCapture(0)
 	    except e:
@@ -120,19 +114,13 @@ def main(argv):
 		ret, frame = cap.read()
                 Mask = applyFilters(frame)
                 cv2.imshow('output', Mask)
-	   	if cv2.waitKey(1) & 0xFF == ord('q'):
+		#time.sleep(0.04)
+	   	if cv2.waitKey(1) & 0xFF == 27:
 		   break
 	    cap.release()
- 	elif mode == 'picture':
-	    cap = cv2.imread('testPicture2.png')
-	    Mask = applyFilters(cap)
-	    cv2.imshow('output', Mask)
-            #k = cv2.waitKey(0)
-            if cv2.waitKey(0) == 27:
-               cv2.destroyAllWindows()
 	else:
-	    print 'argument not recognized run --h'
-	    sys.exit(2)
+		print('Invalid argument')
+		sys.exit(2)
 
 	cv2.destroyAllWindows()
 
