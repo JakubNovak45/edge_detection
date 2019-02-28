@@ -51,6 +51,9 @@ def supression(amplitude, phase):
 	supression = np.zeros(amplitude.shape, dtype=float)
 	for col in range(1, amplitude.shape[0] - 1):
 		for row in range(1, amplitude.shape[1] - 1):
+			a = min(1.0, max(0.0, math.tan(phase[col, row])))
+			q = 0
+			r = 0
 			if(phase[col, row] < 45):
 				q = a * amplitude[col + 1, row + 1] + (1 - a) * amplitude[col + 1, row]
 				r = a * amplitude[col - 1, row - 1] + (1 - a) * amplitude[col - 1, row]
@@ -64,7 +67,7 @@ def supression(amplitude, phase):
 				q = a * amplitude[col - 1, row + 1] + (1 - a) * amplitude[col - 1, row]
 				r = a * amplitude[col + 1, row - 1] + (1 - a) * amplitude[col + 1, row]
 			
-			if(r < amplitude[col, row] & amplitude[col, row] > q):
+			if(r < amplitude[col, row] and amplitude[col, row] > q):
 				supression[col, row] = amplitude[col, row]
 
 	return supression
