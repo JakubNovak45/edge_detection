@@ -9,7 +9,6 @@ def rgb2gray(rgb):
 
 def blurFilter(image):
 	blur = np.zeros_like(image, dtype=float)
-	#applaying filter to image
 	for col in range(1, image.shape[0] - 1):
 		for row in range(1, image.shape[1] - 1):
 			blur[col, row] = (image[col - 1, row - 1] \
@@ -74,16 +73,18 @@ def supression(amplitude, phase):
 
 def tresholding(image, lowBound, highBound):
 	output = np.zeros(image.shape, dtype=float)
+	weakEdges = np.float(25)
+	strongEdges = np.float(255)
 	strong_col, strong_row = np.where(image >= highBound)
 	weak_col, weak_row = np.where((image <= highBound) & (image >= lowBound))
-	output[strong_col, strong_row] = np.float(25)
-	output[weak_col, weak_row] = np.float(255)
-	return output
+	output[strong_col, strong_row] = weakEdges
+	output[weak_col, weak_row] = strongEdges
+	return output, weakEdges, strongEdges
 
 def hysteresis(image, strongEdges, weakEdges):
 	for col in range(1, image.shape[0] - 1):
 		for row in range(1, image.shape[1] - 1):
-			if(image[co, row] == edgesWeak):
+			if(image[col, row] == weakEdges):
 				if ((image[col+1, row-1] == strongEdges) or (image[col+1, row] == strongEdges) 
 				or (image[col+1, row+1] == strongEdges) or (image[col, row-1] == strongEdges)
 				or (image[col, row+1] == strongEdges) or (image[col-1, row-1] == strongEdges) 
@@ -94,19 +95,45 @@ def hysteresis(image, strongEdges, weakEdges):
 	return image		
 			
 
-cap = np.float32(cv2.imread('testFile/kosoctverec.jpg'))
+cap = np.float32(cv2.imread('testFile/testPicture3.jpg'))
 print('loaded')
+startTotal = time.time()
 start = time.time()
 gray = rgb2gray(cap)
-#blur = blurFilter(cap)
-amplitude, phase = edgeFilter(gray)
-supression1 = supression(amplitude, phase)
-bounds = tresholding(supression1, 0.4, 0.5)
 end = time.time()
-print('time: ', end - start)
-cv2.imshow('cv: amplitude', amplitude)
-cv2.imshow('cv: phase', supression1)
-cv2.imshow('cv: supression', bounds)
+print('time gray:', end - start)
+
+start = time.time()
+blur = blurFilter(gray)
+end = time.time()
+cv2.imshow('cv: blur', blur)
+print('time blur:', end - start)
+
+start = time.time()
+amplitude, phase = edgeFilter(gray)
+end = time.time()
+print('time edge:', end - start)
+
+start = time.time()
+supression1 = supression(amplitude, phase)
+end = time.time()
+print('time supression:', end - start)
+
+start = time.time()
+bounds, weakEdges, strongEdges = tresholding(supression1, 0.4, 0.5)
+end = time.time()
+print('time treshold:', end - start)
+
+start = time.time()
+hysteresis = hysteresis(bounds, weakEdges, strongEdges)
+end = time.time()
+print('time hysteresis:', end - start)
+
+end = time.time()
+print('total time: ', end - startTotal)
+cv2.imshow('cv: amplitude', hysteresis)
+#cv2.imshow('cv: phase', cap)
+#cv2.imshow('cv: hysteresis', hysteresis)
 k = cv2.waitKey(0)
 if k == 27:
    cv2.destroyAllWindows()
