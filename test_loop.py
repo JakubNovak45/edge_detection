@@ -95,7 +95,7 @@ def hysteresis(image, strongEdges, weakEdges):
 	return image		
 			
 
-cap = np.float32(cv2.imread('testFile/testPicture3.jpg'))
+cap = np.float32(cv2.imread('testFile/testPicture1.png'))
 print('loaded')
 startTotal = time.time()
 start = time.time()
@@ -120,7 +120,7 @@ end = time.time()
 print('time supression:', end - start)
 
 start = time.time()
-bounds, weakEdges, strongEdges = tresholding(supression1, 0.4, 0.5)
+bounds, weakEdges, strongEdges = tresholding(supression1, 0.2, 0.45)
 end = time.time()
 print('time treshold:', end - start)
 
