@@ -28,34 +28,29 @@ def gaussianBlur(image, size, sigma):
     return gauss
 
 def cannyFilter1(image):
-    #kernel, kernel_size = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]]), 3
-    gradX, gradY = np.zeros_like(image, dtype=float), np.zeros_like(image, dtype=float)
-    #applaying filter to image
-    for col in range(image.shape[0] - 2):
-        for row in range(image.shape[1] - 2):
-	    gradX[col, row] = -1 * image[col - 1, row - 1]
-	    - 1 * image[col, row - 1]
-	    - 1 * image[col + 1, row -1]
+	gradX, gradY = np.zeros_like(image, dtype=float), np.zeros_like(image, dtype=float)
+	amplitude = np.zeros_like(image, dtype=float)
+	#applaying filter to image
+	for col in range(1, image.shape[0] - 1):
+		for row in range(1, image.shape[1] - 1):
+			gradX[col, row] = - image[col - 1, row - 1] \
+			- image[col, row - 1] \
+			- image[col + 1, row -1] \
+			+ image[col - 1, row + 1] \
+			+ image[col, row + 1] \
+			+ image[col + 1, row + 1] \
 
-	    + 1 * image[col - 1, row + 1]
-	    + 1 * image[col, row + 1]
-	    + 1 * image[col + 1, row + 1]
-
-	    gradY[col, row] = -1 * image[col - 1, row - 1]
-	    + 1 * image[col + 1, row -1]
-
- 	    - 1 * image[col - 1, row]
-	    + 1 * image[col + 1, row]
-
-	    - 1 * image[col - 1, row + 1]
-	    + 1 * image[col + 1, row + 1]
-
-    amplitude = np.sqrt(gradX**2, gradY**2)
-    phase = ((np.arctan(gradX/gradY)) / np.pi) * 180
-    phase[phase < 0] += 180
-    return amplitude, phase
-
-
+	    		gradY[col, row] = - image[col - 1, row - 1] \
+ 	    		- image[col, row - 1] \
+	    		- image[col + 1, row - 1] \
+	    		+ image[col - 1, row + 1] \
+	    		+ image[col, row + 1] \
+	    		+ image[col + 1, row + 1]
+			amplitude[col, row] = abs(gradX[col, row]) + abs(gradY[col, row])
+	    		#amplitude[col, row] = math.sqrt(gradX[col, row]**2 + gradY[col, row]**2)
+    	phase = ((np.arctan(gradX/gradY)) / np.pi) * 180
+    	phase[phase < 0] += 180
+	return amplitude, phase
 def cannyFilter(image):
     kernel, kernel_size = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]]), 3
     gradX, gradY = np.zeros_like(image, dtype=float), np.zeros_like(image, dtype=float)
@@ -111,10 +106,10 @@ def applyFilters(image):
         grayMask = rgb2gray(image)
 	end = time.time()
 	print('grayMask', end - start)
-	start = time.time()
-        blurMask = gaussianBlur(grayMask, 3, 2)
-	end = time.time()
-	print('blurMask', end - start)
+#	start = time.time()
+#        blurMask = gaussianBlur(grayMask, 3, 2)
+#	end = time.time()
+#	print('blurMask', end - start)
 	start = time.time()
         cannyAmplitude, cannyPhase = cannyFilter1(grayMask)
 	end = time.time()

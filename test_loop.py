@@ -54,7 +54,7 @@ def supression(amplitude, phase):
 			a = min(1.0, max(0.0, math.tan(phase[col, row])))
 			q = 0
 			r = 0
-			if(phase[col, row] < 45):
+			if(phase[col, row] < 45 and phase[col, row] > 0):
 				q = a * amplitude[col + 1, row + 1] + (1 - a) * amplitude[col + 1, row]
 				r = a * amplitude[col - 1, row - 1] + (1 - a) * amplitude[col - 1, row]
 			elif(phase[col, row] < 90):
@@ -63,13 +63,13 @@ def supression(amplitude, phase):
 			elif(phase[col, row] < 135):
 				q = a * amplitude[col - 1, row + 1] + (1 - a) * amplitude[col, row + 1]
 				r = a * amplitude[col + 1, row - 1] + (1 - a) * amplitude[col, row - 1]
-			elif(phase[col, row] < 180):
+			elif(phase[col, row] <= 180):
 				q = a * amplitude[col - 1, row + 1] + (1 - a) * amplitude[col - 1, row]
 				r = a * amplitude[col + 1, row - 1] + (1 - a) * amplitude[col + 1, row]
-			
+			else:
+				print('you fucked up', phase[col, row])
 			if(r < amplitude[col, row] and amplitude[col, row] > q):
 				supression[col, row] = amplitude[col, row]
-
 	return supression
 
 def tresholding(image, lowBound, highBound):
@@ -79,6 +79,20 @@ def tresholding(image, lowBound, highBound):
 	output[strong_col, strong_row] = np.float(25)
 	output[weak_col, weak_row] = np.float(255)
 	return output
+
+def hysteresis(image, strongEdges, weakEdges):
+	for col in range(1, image.shape[0] - 1):
+		for row in range(1, image.shape[1] - 1):
+			if(image[co, row] == edgesWeak):
+				if ((image[col+1, row-1] == strongEdges) or (image[col+1, row] == strongEdges) 
+				or (image[col+1, row+1] == strongEdges) or (image[col, row-1] == strongEdges)
+				or (image[col, row+1] == strongEdges) or (image[col-1, row-1] == strongEdges) 
+				or (image[col-1, row] == strongEdges) or (image[col-1, row+1] == strongEdges)):
+                        		image[col, row] = strongEdges
+                    		else:
+					image[col, row] = 0
+	return image		
+			
 
 cap = np.float32(cv2.imread('testFile/kosoctverec.jpg'))
 print('loaded')
