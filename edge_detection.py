@@ -139,7 +139,7 @@ def main(argv):
         args = parser.parse_args()
 
         if args.mode == 'picture':
-            cap = np.float32(cv2.imread('testFile/kosoctverec.jpg'))
+            cap = np.float32(cv2.imread('testFile/lena.png'))
             print('loaded')
             Mask = applyFilters(cap)
             cv2.imshow('output', Mask)
