@@ -25,6 +25,7 @@ def blurFilter(image):
 def edgeFilter(image):
         gradX, gradY = np.zeros_like(image, dtype=float), np.zeros_like(image, dtype=float)
         amplitude = np.zeros_like(image, dtype=float)
+
         for col in range(1, image.shape[0] - 1):
                 for row in range(1, image.shape[1] - 1):
                         gradX[col, row] = - image[col - 1, row - 1] \
@@ -41,7 +42,7 @@ def edgeFilter(image):
                         + image[col, row + 1] \
                         + image[col + 1, row + 1]
                         amplitude[col, row] = abs(gradX[col, row]) + abs(gradY[col, row])
-        phase = ((np.arctan2(gradX, gradY)) / np.pi) * 180
+        phase = ((np.arctan2(gradY, gradX)) / np.pi) * 180
         phase[phase < 0] += 180
         return amplitude, phase
 
@@ -70,7 +71,7 @@ def supression(amplitude, phase):
                                 supression[col, row] = amplitude[col, row]
         return supression
 
-def tresholding(image, lowBound, highBound):
+def tresholding(image, lowBound=0.15, highBound=0.25):
         output = np.zeros(image.shape, dtype=float)
         weakEdges = np.float(25)
         strongEdges = np.float(255)
@@ -118,7 +119,7 @@ def applyFilters(image):
     print('time supression:', end - start)
     #tresholding
     start = time.time()
-    bounds, weakEdges, strongEdges = tresholding(supresed, 0.2, 0.45)
+    bounds, weakEdges, strongEdges = tresholding(supresed)
     end = time.time()
     print('time treshold:', end - start)
     #hysteresis
