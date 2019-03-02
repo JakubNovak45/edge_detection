@@ -2,7 +2,7 @@
 Detecting edges in picture using Canny filter
 
 ## Run
-python edge_detection.py -m '<args>'<br />
+python edge_detection.py -m \<args\><br />
 args: video, webcam, picture
   
 ## Output
