@@ -2,6 +2,11 @@ import numpy as np
 import math, time, argparse, sys, os
 import cv2
 
+def rgb2gray(rgb):
+    r, g, b = rgb[:,:,0], rgb[:,:,1], rgb[:,:,2]
+    gray = (0.2989 * r + 0.5870 * g + 0.1140 * b) / 255
+    return gray
+
 def blurFilter(image):
         blur = np.zeros_like(image, dtype=float)
         for col in range(1, image.shape[0] - 1):
