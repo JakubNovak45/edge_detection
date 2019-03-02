@@ -1,5 +1,5 @@
 import numpy as np
-import math, time, argparse, sys, os
+import math, time, argparse, sys
 import cv2
 
 def rgb2gray(rgb):
@@ -71,7 +71,7 @@ def supression(amplitude, phase):
                                 supression[col, row] = amplitude[col, row]
         return supression
 
-def tresholding(image, lowBound=0.15, highBound=0.25):
+def tresholding(image, lowBound=0.15, highBound=0.35):
         output = np.zeros(image.shape, dtype=float)
         weakEdges = np.float(25)
         strongEdges = np.float(255)
