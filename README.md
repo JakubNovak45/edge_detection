@@ -6,7 +6,7 @@ python edge_detection.py -m <args><br />
 args: video, webcam, picture
   
 ## Output
-
+![](outputPictures/output.png)
 
 ### Prerequisites
 numpy         1.16.2  
