@@ -25,7 +25,6 @@ def blurFilter(image):
 def edgeFilter(image):
         gradX, gradY = np.zeros_like(image, dtype=float), np.zeros_like(image, dtype=float)
         amplitude = np.zeros_like(image, dtype=float)
-
         for col in range(1, image.shape[0] - 1):
                 for row in range(1, image.shape[1] - 1):
                         gradX[col, row] = - image[col - 1, row - 1] \
@@ -42,7 +41,7 @@ def edgeFilter(image):
                         + image[col, row + 1] \
                         + image[col + 1, row + 1]
                         amplitude[col, row] = abs(gradX[col, row]) + abs(gradY[col, row])
-        phase = ((np.arctan2(gradY, gradX)) / np.pi) * 180
+                        #amplitude[col, row] = math.sqrt(gradX[col, row]**2 + gradY[col, row]**2)
         phase[phase < 0] += 180
         return amplitude, phase
 
@@ -77,8 +76,8 @@ def tresholding(image, lowBound=0.15, highBound=0.35):
         strongEdges = np.float(255)
         strong_col, strong_row = np.where(image >= highBound)
         weak_col, weak_row = np.where((image <= highBound) & (image >= lowBound))
-        output[strong_col, strong_row] = weakEdges
-        output[weak_col, weak_row] = strongEdges
+        output[strong_col, strong_row] = strongEdges
+        output[weak_col, weak_row] = weakEdges
         return output, weakEdges, strongEdges
 
 def hysteresis(image, strongEdges, weakEdges):
@@ -148,7 +147,6 @@ def main(argv):
                 cv2.destroyAllWindows()
         elif args.mode == 'video':
             cap = cv2.VideoCapture('testFile/testVideo.mp4')
-            
             while(cap.isOpened()):
                 ret, frame = cap.read()
                 Mask = applyFilters(frame)
@@ -170,7 +168,6 @@ def main(argv):
         else:
                 print('Invalid argument')
                 sys.exit(2)
-
         cv2.destroyAllWindows()
             
 if __name__ == "__main__":
