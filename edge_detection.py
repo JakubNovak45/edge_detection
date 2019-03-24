@@ -77,8 +77,8 @@ def tresholding(image, lowBound=0.15, highBound=0.35):
         strongEdges = np.float(255)
         strong_col, strong_row = np.where(image >= highBound)
         weak_col, weak_row = np.where((image <= highBound) & (image >= lowBound))
-        output[strong_col, strong_row] = weakEdges
-        output[weak_col, weak_row] = strongEdges
+        output[strong_col, strong_row] = strongEdges
+        output[weak_col, weak_row] = weakEdges
         return output, weakEdges, strongEdges
 
 def hysteresis(image, strongEdges, weakEdges):
