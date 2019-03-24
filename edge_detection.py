@@ -42,6 +42,7 @@ def edgeFilter(image):
                         + image[col + 1, row + 1]
                         amplitude[col, row] = abs(gradX[col, row]) + abs(gradY[col, row])
                         #amplitude[col, row] = math.sqrt(gradX[col, row]**2 + gradY[col, row]**2)
+        phase = ((np.arctan2(gradY, gradX)) / np.pi) * 180
         phase[phase < 0] += 180
         return amplitude, phase
 
@@ -76,8 +77,8 @@ def tresholding(image, lowBound=0.15, highBound=0.35):
         strongEdges = np.float(255)
         strong_col, strong_row = np.where(image >= highBound)
         weak_col, weak_row = np.where((image <= highBound) & (image >= lowBound))
-        output[strong_col, strong_row] = strongEdges
-        output[weak_col, weak_row] = weakEdges
+        output[strong_col, strong_row] = weakEdges
+        output[weak_col, weak_row] = strongEdges
         return output, weakEdges, strongEdges
 
 def hysteresis(image, strongEdges, weakEdges):
